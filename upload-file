@@ -12,7 +12,6 @@ def parse_arguments():
   parser.add_argument("-n", "--name", help="el nombre que tomará el archivo en el servidor", required=True)
   parser.add_argument("-p", "--protocol", help="el protocolo a utilizar para la comunicación", default="tcp", choices=['tcp', 'udp'])
 
-
   return parser.parse_args()
 
 def main():
