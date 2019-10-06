@@ -1,9 +1,13 @@
-import socket
+import socket, os
 
 CHUNK_SIZE = 1024
 
 def start_server(server_address, storage_dir):
-  # DOING: Implementar TCP server
+  """ DOING: Implementación TCP server
+  Backlog:
+    * diferenciar upload/download
+    * modularizar
+  """
   # host = server_address[0]
   # port = server_address[1]
   print('TCP: start_server({}, {})'.format(server_address, storage_dir))
@@ -44,9 +48,34 @@ def start_server(server_address, storage_dir):
     filename = "{}/{}".format(storage_dir,filename)
     print('filename: {}'.format(filename))
 
-    f = open(filename, "wb")
-    #
-    file_size = int(conn.recv(CHUNK_SIZE).decode())
+    # Envío de archivo al cliente
+    f = open(filename, "rb")
+    f.seek(0, os.SEEK_END)
+    file_size = f.tell()
+    f.seek(0, os.SEEK_SET)
+
+    print("Sending {} bytes from {}".format(file_size, filename))
+
+    # Envío tamaño de archivo en bytes
+    conn.send(str(file_size).encode())
+    signal = conn.recv(CHUNK_SIZE).decode()
+
+    if signal != "start":
+      print("There was an error on the server")
+      return exit(1)
+
+    bytes_sent = 0
+    while bytes_sent < file_size:
+      chunk = f.read(CHUNK_SIZE)
+      if not chunk:
+        break
+      bytes_sent += conn.send(chunk)
+
+    # Cierro archivo
+    f.close()
+
+    # Recepción cantidad de bytes de archivo
+    """ file_size = int(conn.recv(CHUNK_SIZE).decode())
     conn.send(b'start')
 
     bytes_recv = 0
@@ -56,7 +85,7 @@ def start_server(server_address, storage_dir):
       f.write(data)
 
     f.close()
-    print("Received file {}".format(filename))
+    print("Received file {}".format(filename)) """
 
   sock.close()
 

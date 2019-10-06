@@ -3,7 +3,10 @@ import socket, os
 CHUNK_SIZE = 1024
 
 def upload_file(server_address, src, name):
-  # TODO: Implementar TCP upload_file client
+  """ DOING: Implementación TCP upload_file client
+  Backlog:
+    * modularizar
+  """
   print('TCP: upload_file({}, {}, {})'.format(server_address, src, name))
 
   # Creación socket TCP
