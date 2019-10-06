@@ -3,7 +3,7 @@ import socket
 CHUNK_SIZE = 1024
 
 def download_file(server_address, name, dst):
-  """ DOING: Implementar TCP download_file client
+  """ DOING: Implementación TCP download_file client
   Backlog:
     * modularizar
   """
@@ -36,6 +36,21 @@ def download_file(server_address, name, dst):
     bytes_sent += sock.send(name.encode())
 
   f = open(dst, "wb")
+
+  command = 'download'
+  cmd_len = len(command)
+  sock.send(str(cmd_len).encode())
+
+  # Espero OK de svr
+  signal = sock.recv(CHUNK_SIZE).decode()
+
+  if signal != 'start':
+    print('Error receiving name size from server')
+    return exit(1)
+
+  bytes_sent = 0
+  while bytes_sent < len(command):
+    bytes_sent += sock.send(command.encode())
 
   # Recepción cantidad de bytes de archivo
   file_size = int(sock.recv(CHUNK_SIZE).decode())

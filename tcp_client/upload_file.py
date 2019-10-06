@@ -21,7 +21,7 @@ def upload_file(server_address, src, name):
   while bytes_sent < len(str(filename_size)):
     bytes_sent += sock.send(str(filename_size).encode())
 
-  # Aguardo OK de svr
+  # Espero OK de svr
   signal = sock.recv(CHUNK_SIZE).decode()
 
   if signal != 'start':
@@ -32,6 +32,21 @@ def upload_file(server_address, src, name):
   bytes_sent = 0
   while bytes_sent < filename_size:
     bytes_sent += sock.send(name.encode())
+
+  command = 'upload'
+  cmd_len = len(command)
+  sock.send(str(cmd_len).encode())
+
+  # Espero OK de svr
+  signal = sock.recv(CHUNK_SIZE).decode()
+
+  if signal != 'start':
+    print('Error receiving name size from server')
+    return exit(1)
+
+  bytes_sent = 0
+  while bytes_sent < cmd_len:
+    bytes_sent += sock.send(command.encode())
 
   # Envío archivo al servidor
   f = open(src, "rb")

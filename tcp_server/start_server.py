@@ -5,7 +5,6 @@ CHUNK_SIZE = 1024
 def start_server(server_address, storage_dir):
   """ DOING: Implementación TCP server
   Backlog:
-    * diferenciar upload/download
     * modularizar
   """
   # host = server_address[0]
@@ -48,47 +47,59 @@ def start_server(server_address, storage_dir):
     filename = "{}/{}".format(storage_dir,filename)
     print('filename: {}'.format(filename))
 
-    # Envío de archivo al cliente
-    f = open(filename, "rb")
-    f.seek(0, os.SEEK_END)
-    file_size = f.tell()
-    f.seek(0, os.SEEK_SET)
+    # Recibo comando (download o upload)
+    command = ''
 
-    print("Sending {} bytes from {}".format(file_size, filename))
+    cmd_length = int(conn.recv(CHUNK_SIZE).decode())
 
-    # Envío tamaño de archivo en bytes
-    conn.send(str(file_size).encode())
-    signal = conn.recv(CHUNK_SIZE).decode()
-
-    if signal != "start":
-      print("There was an error on the server")
-      return exit(1)
-
-    bytes_sent = 0
-    while bytes_sent < file_size:
-      chunk = f.read(CHUNK_SIZE)
-      if not chunk:
-        break
-      bytes_sent += conn.send(chunk)
-
-    # Cierro archivo
-    f.close()
-
-    # Recepción cantidad de bytes de archivo
-    """ file_size = int(conn.recv(CHUNK_SIZE).decode())
     conn.send(b'start')
 
     bytes_recv = 0
-    while bytes_recv < file_size:
-      data = conn.recv(CHUNK_SIZE)
+    while bytes_recv < cmd_length:
+      data = conn.recv(CHUNK_SIZE).decode()
+      command += data
       bytes_recv += len(data)
-      f.write(data)
 
-    f.close()
-    print("Received file {}".format(filename)) """
+    if command == 'download':
+      # Envío de archivo al cliente
+      f = open(filename, "rb")
+      f.seek(0, os.SEEK_END)
+      file_size = f.tell()
+      f.seek(0, os.SEEK_SET)
+
+      print("Sending {} bytes from {}".format(file_size, filename))
+
+      # Envío tamaño de archivo en bytes
+      conn.send(str(file_size).encode())
+      signal = conn.recv(CHUNK_SIZE).decode()
+
+      if signal != "start":
+        print("There was an error on the server")
+        return exit(1)
+
+      bytes_sent = 0
+      while bytes_sent < file_size:
+        chunk = f.read(CHUNK_SIZE)
+        if not chunk:
+          break
+        bytes_sent += conn.send(chunk)
+
+      # Cierro archivo
+      f.close()
+    elif command == 'upload':
+      # Recepción cantidad de bytes de archivo
+      f = open(filename, "wb")
+
+      file_size = int(conn.recv(CHUNK_SIZE).decode())
+      conn.send(b'start')
+
+      bytes_recv = 0
+      while bytes_recv < file_size:
+        data = conn.recv(CHUNK_SIZE)
+        bytes_recv += len(data)
+        f.write(data)
+
+      f.close()
+      print("Received file {}".format(filename))
 
   sock.close()
-
-def recv_cmd():
-  """ Se recibe por parte del cliente si quiere subir o descargar un archivo """
-  pass
