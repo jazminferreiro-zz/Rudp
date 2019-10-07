@@ -2,13 +2,31 @@ import socket, os
 
 CHUNK_SIZE = 1024
 
+def create_dir(storage_dir):
+  if not os.path.exists(storage_dir):
+    os.mkdir(storage_dir)
+    print('Dir: {} created!'.format(storage_dir)) 
+
+def recieve(conn,size):
+  full_data = ''
+  bytes_recv = 0
+  while bytes_recv < size:
+    data = conn.recv(CHUNK_SIZE).decode()
+    full_data += data
+    bytes_recv += len(data)
+  return full_data
+
 def start_server(server_address, storage_dir):
   """ DOING: Implementación TCP server
   Backlog:
     * modularizar
+    * clase socket? 
   """
   # host = server_address[0]
   # port = server_address[1]
+
+  create_dir(storage_dir)
+
   print('TCP: start_server({}, {})'.format(server_address, storage_dir))
 
   # Se crea socket TCP
@@ -28,8 +46,6 @@ def start_server(server_address, storage_dir):
     print("Accepted connection from {}".format(addr_info))
 
     # Recibo file_name length
-    filename = ''
-
     # TODO: ver validar cuando recibi todo el numero
     filename_size = int(conn.recv(CHUNK_SIZE).decode())
     print('filename length: {}'.format(filename_size))
@@ -38,27 +54,14 @@ def start_server(server_address, storage_dir):
     conn.send(b'start')
 
     # Recepción nombre de archivo
-    bytes_recv = 0
-    while bytes_recv < filename_size:
-      data = conn.recv(CHUNK_SIZE).decode()
-      filename += data
-      bytes_recv += len(data)
-
+    filename = recieve(conn,filename_size)
     filename = "{}/{}".format(storage_dir,filename)
     print('filename: {}'.format(filename))
 
     # Recibo comando (download o upload)
-    command = ''
-
     cmd_length = int(conn.recv(CHUNK_SIZE).decode())
-
     conn.send(b'start')
-
-    bytes_recv = 0
-    while bytes_recv < cmd_length:
-      data = conn.recv(CHUNK_SIZE).decode()
-      command += data
-      bytes_recv += len(data)
+    command = recieve(conn,cmd_length)
 
     if command == 'download':
       # Envío de archivo al cliente
