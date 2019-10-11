@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
-from tcp_server.start_server import start_server as start_server_tcp
+
+from tcp.tcp_server.TcpServer import TcpServer
 from udp_server.start_server import start_server as start_server_udp
 
 def parse_arguments():
@@ -12,6 +13,16 @@ def parse_arguments():
   parser.add_argument("-p", "--protocol", help="el protocolo a utilizar para la comunicación", default="tcp", choices=['tcp', 'udp'])
 
   return parser.parse_args()
+
+
+def start_server_tcp(server_address, storage_dir):
+  server = TcpServer(server_address, storage_dir)
+  while True:
+    finish_serv_client = False
+    while not (finish_serv_client):
+      finish_serv_client = server.execute_command()
+    server.connect_with_client()
+
 
 def main():
   args = parse_arguments()
