@@ -16,7 +16,6 @@ class Connection:
     NUM_LEN = 10
     CODE_LEN = 2
 
-    OK = "ok"
     DOWNLOAD = "dl"
     UPLOAD = "ul"
 
@@ -32,14 +31,8 @@ class Connection:
     def recv_code(self)-> str:
         return self.socket.receive_bytes(self.CODE_LEN).decode()
 
-    def wait_ok_signal(self):
-        signal = self.recv_code()
-        if signal != self.OK:
-            print("There was an error in connection, ok never received")
-            return exit(1)
 
     # envio y recibo numeros
-
     def send_number(self, num: int):
         nun_in_ten_bytes = '{:>10}'.format(str(num)).encode()
         self.socket.send_bytes(nun_in_ten_bytes)
@@ -55,9 +48,6 @@ class Connection:
         filename_size = self.recv_number()
         print('filename length: {}'.format(filename_size))
 
-        # Envío OK
-        self.send_code(self.OK)
-
         # Recepción nombre de archivo
         filename = self.socket.receive_bytes(filename_size)
         return filename.decode()
@@ -68,9 +58,6 @@ class Connection:
         filename_size = len(name)
         self.send_number(filename_size)
 
-        # Espero OK de svr
-        self.wait_ok_signal()
-
         # Envío nombre de archivo al servidor
         self.socket.send_bytes(name)
 
@@ -79,7 +66,6 @@ class Connection:
     def recv_file(self, filename_path):
         # Recepción cantidad de bytes de archivo
         file_size = self.recv_number()
-        self.send_code(self.OK)
 
         f = open(filename_path, "wb")
 
@@ -102,7 +88,6 @@ class Connection:
 
         # Envío tamaño de archivo en bytes
         self.send_number(file_size)
-        self.wait_ok_signal()
 
         bytes_sent = 0
         while bytes_sent < file_size:

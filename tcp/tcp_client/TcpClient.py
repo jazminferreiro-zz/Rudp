@@ -12,16 +12,12 @@ class TcpClient():
 
     def download(self, filename, destination):
         self.connection.send_code(self.connection.DOWNLOAD)
-        self.connection.wait_ok_signal()
         self.connection.send_filename(filename)
-        self.connection.wait_ok_signal()
         self.connection.recv_file(destination)
 
 
     def upload(self, filename, source):
         self.connection.send_code(self.connection.UPLOAD)
-        self.connection.wait_ok_signal()
         self.connection.send_filename(filename)
-        self.connection.wait_ok_signal()
         self.connection.send_file(source)
 

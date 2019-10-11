@@ -26,12 +26,10 @@ class TcpServer:
         command = self.connection.recv_code()
         if command == self.connection.DOWNLOAD:
             print("EL cliente solicita descargar archivo")
-            self.connection.send_code(self.connection.OK)
             self.connection.send_file(self.get_filename_path())
             return True
         elif command == self.connection.UPLOAD:
             print("El cliente solicito subir archivo")
-            self.connection.send_code(self.connection.OK)
             self.connection.recv_file(self.get_filename_path())
             return True
         else:
@@ -39,7 +37,6 @@ class TcpServer:
 
     def get_filename_path(self):
         filename = self.connection.recv_filename()
-        self.connection.send_code(self.connection.OK)
         filename_path = "{}/{}".format(self.storage_dir, filename)
         print('filename: {}'.format(filename_path))
         return filename_path
