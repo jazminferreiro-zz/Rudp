@@ -4,7 +4,8 @@ from udp.RudpSocket import RudpSocket
 
 
 class UdpClient(object):
-    MODE = 'upload'
+    UPLOAD_MODE = 'upload'
+    DOWNLOAD_MODE = 'download'
     CHUNK_SIZE = 1024
     OWN_ADDR = ('127.0.0.1', 8888)
     SUCCESS = 0
@@ -20,7 +21,7 @@ class UdpClient(object):
         sock = RudpSocket()
         sock.bind(self.OWN_ADDR)
 
-        sock.sendto(self.MODE, server_address)
+        sock.sendto(self.UPLOAD_MODE, server_address)
         sock.sendto(name, server_address)
 
         with open(src, 'rb') as file:
@@ -32,5 +33,23 @@ class UdpClient(object):
                     break
                 sock.sendto(chunk, server_address)
 
-    def download(self, server_address, dest, name):
-        pass
+    def download(self, server_address, name, dest):
+        sock = RudpSocket()
+        sock.bind(self.OWN_ADDR)
+
+        sock.sendto(self.DOWNLOAD_MODE, server_address)
+        sock.sendto(name, server_address)
+
+        size, server_address = sock.recvfrom(self.CHUNK_SIZE)
+        with open(dest, 'wb') as file:
+            bytes_received = 0
+            while bytes_received < size:
+                chunk, server_address = sock.recvfrom(self.CHUNK_SIZE)
+                bytes_received += len(chunk)
+                file.write(chunk)
+
+
+
+
+
+

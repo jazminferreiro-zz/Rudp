@@ -1,7 +1,7 @@
 
 import threading
 import socket
-
+import os
 from udp.RudpSocket import RudpSocket
 
 
@@ -36,10 +36,11 @@ class UdpServer(object):
 
         while self.keep_running:
             mode, addr = self.sock.recvfrom(self.CHUNK_SIZE)
+            print("Mode: {}".format(mode))
             if mode == self.UPLOAD_MODE:
                 self.upload_file(addr, storage_dir)
             elif mode == self.DOWNLOAD_MODE:
-                self.download_file()
+                self.download_file(addr, storage_dir)
 
         self.ended = True
 
@@ -56,6 +57,22 @@ class UdpServer(object):
                 bytes_received += len(chunk)
                 file.write(chunk)
 
+    def file_size(self, file):
+        file.seek(0, os.SEEK_END)
+        size = file.tell()
+        file.seek(0, os.SEEK_SET)
+        return size
 
-    def download_file(self):
-        pass
+    def download_file(self, addr, storage_dir):
+        name, addr = self.sock.recvfrom(self.CHUNK_SIZE)
+        print('Requested File: {}'.format(name))
+        filepath = '{}/{}'.format(storage_dir, name)
+
+        with open(filepath, 'rb') as file:
+            self.sock.sendto(self.file_size(file), addr)
+            while True:
+                chunk = file.read(int(self.CHUNK_SIZE/2))
+                if not chunk:
+                    break
+                self.sock.sendto(chunk, addr)
+

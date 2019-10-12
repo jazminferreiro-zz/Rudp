@@ -22,7 +22,7 @@ class RudpSocket(object):
 
         while keep_resending:
             bytes_sent = self.sock.sendto(bytes_package, addr)
-            self.sock.settimeout(self.TIMEOUT)
+            # self.sock.settimeout(self.TIMEOUT)
             try:
                 ack_data, addr = self.sock.recvfrom(self.BUFSIZE)
                 ack_package = pickle.loads(ack_data)
