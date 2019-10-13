@@ -19,9 +19,11 @@ class UdpSocket(Socket):
         self.own_address = own_address
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         #self.sock.setblocking(False)  # no blockeante
+        self.sock.settimeout(self.TIMEOUT)
         self.is_connected = False
         self.conn_adress = None
         self.seq_num = 0 #random.randint(0, 100)
+        self.seq_recd = [] #guardo los seq_number de paquetes recibidos para descartar duplicados
 
     def bind_and_listen(self):
         # Bind socket a host:port
@@ -80,7 +82,6 @@ class UdpSocket(Socket):
     #Espera a recibir el ack del seq num recien enviado
     #si no lo recibe pasado el timeout lo tomara como perdido
     def wait_ack(self) -> bool:
-        self.sock.settimeout(self.TIMEOUT)
         try:
             ack_data, addr = self.sock.recvfrom(self.MSS)
         except socket.timeout:
@@ -100,7 +101,10 @@ class UdpSocket(Socket):
         chunks = []
         bytes_recd = 0
         while bytes_recd < size:
-            data, addr= self.sock.recvfrom(self.MSS)
+            try:
+                data, addr= self.sock.recvfrom(self.MSS)
+            except:
+                continue #sigo esperando recibir data
             if (self.conn_adress == None):
                 self.conn_adress = addr
             elif(self.conn_adress != addr):
@@ -111,6 +115,10 @@ class UdpSocket(Socket):
                 raise RuntimeError("socket connection broken")
             package = pickle.loads(data)
             self.send_ack(package)
+            seq_num_received = package.get('header').get('seq_num')
+            if(seq_num_received in self.seq_recd):
+                continue #paquete duplicado, lo descarto
+            self.seq_recd.append(seq_num_received)
             payload = package.get('payload')
             chunks.append(payload)
             bytes_recd = bytes_recd + len(payload)
