@@ -1,5 +1,5 @@
 import os
-
+from datetime import datetime
 from model import Socket
 
 """Los comandos posibles tienen 2 caracteres (para no tener que recibir el largo del comando)
@@ -63,6 +63,7 @@ class Connection:
     # envio y recibo archivos
 
     def recv_file(self, filename_path):
+        start = datetime.now()
         # Recepción cantidad de bytes de archivo
         file_size = self.recv_number()
 
@@ -74,8 +75,13 @@ class Connection:
             bytes_recv += len(data)
             f.write(data)
         f.close()
+        end = datetime.now()
+        time_spent = (end-start).total_seconds()
 
-        print("Received file {}".format(filename_path))
+        print("Received file {} in {} seconds".format(filename_path, time_spent))
+        throughput = file_size/(1000000*time_spent)
+        print("th = {:.2f} MB por segundo ".format(throughput))
+
 
 
     def send_file(self, filename_path):
