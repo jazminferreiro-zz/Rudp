@@ -1,20 +1,19 @@
-from tcp.Connection import Connection
-from tcp.TcpSocket import TcpSocket
+from model.Connection import Connection
+
 import os
 
 
-class TcpServer:
-    def __init__(self, server_address, storage_dir):
+class Server(object):
+    def __init__(self,  storage_dir):
         self.storage_dir = storage_dir
         self.create_dir()
-        self.server_socket = TcpSocket(server_address)
-        self.server_socket.bind_and_listen()
-        self.connect_with_client()
 
+    def reset(self):
+        #para resetear la conexion UDP
+        pass
 
-    def connect_with_client(self):
-        socket = self.server_socket.accept()
-        self.connection = Connection( socket)
+    def new_connection(self, connection: Connection):
+        self.connection = connection
 
     def create_dir(self):
         """ Validación de directorio, si no existe lo crea. """
@@ -27,10 +26,12 @@ class TcpServer:
         if command == self.connection.DOWNLOAD:
             print("EL cliente solicita descargar archivo")
             self.connection.send_file(self.get_filename_path())
+            self.reset()
             return True
         elif command == self.connection.UPLOAD:
             print("El cliente solicito subir archivo")
             self.connection.recv_file(self.get_filename_path())
+            self.reset()
             return True
         else:
             return False

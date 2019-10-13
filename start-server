@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import argparse
 
-from tcp.tcp_server.TcpServer import TcpServer
-from udp.udp_server.UdpServer import UdpServer
+from model.tcp.TcpServer import TcpServer
+from model.udp.UdpServer import UdpServer
 
 
 def parse_arguments():
@@ -26,7 +26,7 @@ def start_server_tcp(server_address, storage_dir):
 
 
 def start_server_udp(server_address, storage_dir):
-  server = UdpServer().run(server_address, storage_dir)
+  server = UdpServer(server_address, storage_dir)
   while True:
     finish_serv_client = False
     while not (finish_serv_client):

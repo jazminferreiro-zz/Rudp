@@ -1,13 +1,12 @@
 import socket
 
-CHUNK_SIZE = 1024
-NUM_SIZE = 10
+from model.Socket import Socket
 
 """
 Socket TCP
 envia y recibe bytes
 """
-class TcpSocket:
+class TcpSocket(Socket):
   def __init__(self, server_address: tuple, is_connected: bool = False, conn_socket = None):
       # Creación socket TCP
       self.server_address = server_address
@@ -63,7 +62,7 @@ class TcpSocket:
       chunks = []
       bytes_recd = 0
       while bytes_recd < size:
-          chunk = self.sock.recv(min(size - bytes_recd, CHUNK_SIZE))
+          chunk = self.sock.recv(min(size - bytes_recd, self.MSS))
           if chunk == '':
               print("Error receiving msg")
               raise RuntimeError("socket connection broken")

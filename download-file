@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import argparse
 
-from tcp.tcp_client.TcpClient import TcpClient
-from udp.udp_client.UdpClient import UdpClient
+from model.tcp.TcpClient import TcpClient
+from model.udp.UdpClient import UdpClient
 
 
 def parse_arguments():
@@ -21,8 +21,8 @@ def download_file_tcp(server_address, name, dest):
   client.download(name, dest)
 
 def download_file_udp(server_address, name, dest):
-  client = UdpClient()
-  client.download(server_address, name, dest)
+  client = UdpClient(server_address)
+  client.download(name, dest)
 
 def main():
   args = parse_arguments()

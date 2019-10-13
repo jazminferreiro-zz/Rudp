@@ -1,25 +1,24 @@
 import os
-from tcp.TcpSocket import TcpSocket
+
+from model import Socket
 
 """Los comandos posibles tienen 2 caracteres (para no tener que recibir el largo del comando)
     las opciones son:
-    ok = para empezar a enviar el mensaje
     dl = download
     ul = upload
-    sd = shutdown connection
-    se envia el largo del archivo terminado en punto por ejemplo "100."
+    se envia el largo del archivo terminado en 10 bytes ej:"0000000030"
 """
 
 
 class Connection:
-    CHUNK_SIZE = 1024
+    CHUNK_SIZE = 1000000000 #no deberia haber problema en cargar mucho en memoria
     NUM_LEN = 10
     CODE_LEN = 2
 
     DOWNLOAD = "dl"
     UPLOAD = "ul"
 
-    def __init__(self, socket: TcpSocket):
+    def __init__(self, socket: Socket):
         self.socket = socket
         if not (self.socket.is_connected):
             raise RuntimeError("Connection is broken")
@@ -75,7 +74,9 @@ class Connection:
             bytes_recv += len(data)
             f.write(data)
         f.close()
+
         print("Received file {}".format(filename_path))
+
 
     def send_file(self, filename_path):
         # Envío de archivo
