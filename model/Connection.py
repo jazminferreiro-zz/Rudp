@@ -79,8 +79,8 @@ class Connection:
         time_spent = (end-start).total_seconds()
 
         print("Received file {} in {} seconds".format(filename_path, time_spent))
-        throughput = file_size/(1000000*time_spent)
-        print("th = {:.2f} MB por segundo ".format(throughput))
+        throughput = file_size/time_spent
+        print("th = {:.2f} Bytes por segundo ".format(throughput))
 
 
 

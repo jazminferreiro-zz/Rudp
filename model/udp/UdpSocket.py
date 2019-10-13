@@ -35,6 +35,7 @@ class UdpSocket(Socket):
     def connect(self, conn_addr = None ):
         self.is_connected = True
         self.conn_adress = conn_addr
+        self.seq_recd = []
         #si es el servidor no sabra cual es la direccion del cliente hasta no recibir unmensaje
 
 
@@ -69,6 +70,7 @@ class UdpSocket(Socket):
     #para eso necesitan tener un tamaño fino = MSS
     #un paquete con payload vacio ocupa 70
     def pack(self, msg: bytes, total_ack: bytes):
+        print("----------------------> enviando paquete {}".format(self.seq_num))
         package = {
             'header': {'seq_num': self.seq_num},
             'payload': ''
@@ -91,6 +93,7 @@ class UdpSocket(Socket):
         ack_package = pickle.loads(ack_data)
         ack_num = ack_package.get('header').get('ack')
         if (ack_num == self.seq_num + 1):
+            print("------------------ paquete {} recibido correctamente".format(self.seq_num))
             return True
         return False
 
@@ -104,6 +107,7 @@ class UdpSocket(Socket):
             try:
                 data, addr= self.sock.recvfrom(self.MSS)
             except:
+                print("esperando paquetes para completar mensaje......")
                 continue #sigo esperando recibir data
             if (self.conn_adress == None):
                 self.conn_adress = addr
@@ -117,6 +121,7 @@ class UdpSocket(Socket):
             self.send_ack(package)
             seq_num_received = package.get('header').get('seq_num')
             if(seq_num_received in self.seq_recd):
+                print("paquete duplicado")
                 continue #paquete duplicado, lo descarto
             self.seq_recd.append(seq_num_received)
             payload = package.get('payload')
@@ -128,6 +133,7 @@ class UdpSocket(Socket):
 
     # en el ack mando la cantidad  de bytes recibidos
     def send_ack(self, package):
+        print("<---------------------- recibi paquete {} ".format( package.get('header').get('seq_num')))
         package_seq_num = package.get('header').get('seq_num') + 1
         package = {
             'header': {'ack': package_seq_num},
