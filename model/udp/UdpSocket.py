@@ -80,17 +80,17 @@ class UdpSocket(Socket):
     #Espera a recibir el ack del seq num recien enviado
     #si no lo recibe pasado el timeout lo tomara como perdido
     def wait_ack(self) -> bool:
-        start = datetime.now()
-        timer = 0
-        while (timer < self.TIMEOUT):
+        self.sock.settimeout(self.TIMEOUT)
+        try:
             ack_data, addr = self.sock.recvfrom(self.MSS)
-            if (self.conn_adress != None and  self.conn_adress != addr):
-                print("No es posible atender mas de una conexion cliente-servidor por vez")
-            ack_package = pickle.loads(ack_data)
-            ack_num = ack_package.get('header').get('ack')
-            if (ack_num == self.seq_num + 1):
-                return True
-            timer = (datetime.now() -start).seconds
+        except socket.timeout:
+            return False
+        if (self.conn_adress != None and  self.conn_adress != addr):
+            print("No es posible atender mas de una conexion cliente-servidor por vez")
+        ack_package = pickle.loads(ack_data)
+        ack_num = ack_package.get('header').get('ack')
+        if (ack_num == self.seq_num + 1):
+            return True
         return False
 
 
