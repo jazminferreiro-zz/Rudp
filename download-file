@@ -20,16 +20,8 @@ def parse_arguments():
 
   return parser.parse_args()
 
-def wait_signal(client:Client):
-  c = None
-  while not c:
-    c = select.select([sys.stdin], [], [], 1)[0]
-  client.stop_running()
-
 def download_file(client: Client, name, dest):
-  signal_thread = threading.Thread(name="wait-signal-download", target=wait_signal, args=(client,))
   client.download(name, dest)
-  signal_thread.start()
 
 def main():
   args = parse_arguments()

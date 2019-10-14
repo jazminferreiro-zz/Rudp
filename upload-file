@@ -21,16 +21,10 @@ def parse_arguments():
 
   return parser.parse_args()
 
-def wait_signal(client):
-  c = None
-  while not c:
-    c = select.select([sys.stdin], [], [], 1)[0]
-  client.stop_running()
 
 def upload_file(client: Client, name, dest):
-  signal_thread = threading.Thread(name= "wait-signal-upload",target=wait_signal, args=(client,))
   client.upload(name, dest)
-  signal_thread .start()
+
 
 def main():
   args = parse_arguments()
@@ -38,10 +32,10 @@ def main():
 
   if args.protocol == "tcp":
     client = TcpClient(server_address)
-    upload_file(client,  args.src, args.name)
+    upload_file(client,  args.name, args.src)
   elif args.protocol == "udp":
     client = UdpClient(server_address)
-    upload_file(client, args.src, args.name)
+    upload_file(client, args.name,  args.src)
   else:
     raise Exception("protocolo invalido")
 

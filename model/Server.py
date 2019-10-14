@@ -30,14 +30,12 @@ class Server(object):
 
     def listen(self):
         while(self.continue_listening):
-            try:
-                self.connect_with_client()
-                self.execute_command()
-                self.reset()
-                print("listo para aceptar nuevas conexiones")
-
-            except(OSError,AttributeError):
-                print(" se cerro el server")
+            self.connect_with_client()
+            self.execute_command()
+            self.reset()
+            print("listo para aceptar nuevas conexiones")
+            #except(OSError,AttributeError):
+                #print(" se cerro el server")
 
 
 

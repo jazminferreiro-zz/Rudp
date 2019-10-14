@@ -1,7 +1,9 @@
+import queue
 import random
 import socket
 import pickle
 from datetime import datetime
+
 
 from model.Socket import Socket
 
@@ -30,6 +32,8 @@ class UdpSocket(Socket):
         self.conn_adress = None
         self.seq_num = 0 #random.randint(0, 100)
         self.ack_seq_nums_list = [] #guardo los seq_number de paquetes recibidos para descartar duplicados
+        self.acks_quque = queue.Queue()
+        self.packages_queuq = queue.Queue()
 
     def bind_and_listen(self):
         # Bind socket a host:port
@@ -122,9 +126,11 @@ class UdpSocket(Socket):
             return False
         ack_package = pickle.loads(ack_data)
         ack_num = ack_package.get(self.HEADER).get(self.ACK)
-        if(ack_num == None):
-            return False #recibio un mensaje que no es un ack
-        if (ack_num > self.seq_num):
+        if (ack_num == None):
+            return False  # recibio un mensaje que no es un ack
+        self.acks_quque.put(ack_num)
+
+        if ( self.acks_quque.get(block=True) > self.seq_num):
             print("------------------ paquete {} recibido correctamente".format(ack_num - 1))
             return True
         return False
