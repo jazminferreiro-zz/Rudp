@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 import argparse
+import select
+import sys
+import threading
 
+from model import Client
 from model.tcp.TcpClient import TcpClient
 from model.udp.UdpClient import UdpClient
 
@@ -16,22 +20,27 @@ def parse_arguments():
 
   return parser.parse_args()
 
-def download_file_tcp(server_address, name, dest):
-  client = TcpClient(server_address)
-  client.download(name, dest)
+def wait_signal(client:Client):
+  c = None
+  while not c:
+    c = select.select([sys.stdin], [], [], 1)[0]
+  client.stop_running()
 
-def download_file_udp(server_address, name, dest):
-  client = UdpClient(server_address)
+def download_file(client: Client, name, dest):
+  signal_thread = threading.Thread(name="wait-signal-download", target=wait_signal, args=(client,))
   client.download(name, dest)
+  signal_thread.start()
 
 def main():
   args = parse_arguments()
   server_address = (args.server_host, args.server_port)
 
   if args.protocol == "tcp":
-    download_file_tcp(server_address, args.name, args.dst)
+    client = TcpClient(server_address)
+    download_file(client, args.name, args.dst)
   elif args.protocol == "udp":
-    download_file_udp(server_address, args.name, args.dst)
+    client = UdpClient(server_address)
+    download_file(client, args.name, args.dst)
   else:
     raise Exception("protocolo invalido")
 

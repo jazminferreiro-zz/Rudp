@@ -2,6 +2,8 @@
 import argparse
 import select
 import sys
+import threading
+import time
 
 from model import Server
 from model.tcp.TcpServer import TcpServer
@@ -21,7 +23,6 @@ def parse_arguments():
 
 
 def start_server(server: Server):
-
   server.start_listenning()
   c = None
   while not c:
@@ -44,3 +45,5 @@ def main():
     raise Exception("protocolo invalido")
 
 main()
+
+

@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 import argparse
+import select
+import sys
+import threading
+import time
 
+from model import Client
 from model.tcp.TcpClient import TcpClient
 from model.udp.UdpClient import UdpClient
 
@@ -16,24 +21,32 @@ def parse_arguments():
 
   return parser.parse_args()
 
-def upload_file_tcp(server_address, src, name):
-  client = TcpClient(server_address)
-  client.upload(name,src)
+def wait_signal(client):
+  c = None
+  while not c:
+    c = select.select([sys.stdin], [], [], 1)[0]
+  client.stop_running()
 
-def upload_file_udp(server_address, src, name):
-  client = UdpClient(server_address)
-  client.upload(name,src)
-
+def upload_file(client: Client, name, dest):
+  signal_thread = threading.Thread(name= "wait-signal-upload",target=wait_signal, args=(client,))
+  client.upload(name, dest)
+  signal_thread .start()
 
 def main():
   args = parse_arguments()
   server_address = (args.server_host, args.server_port)
 
   if args.protocol == "tcp":
-    upload_file_tcp(server_address, args.src, args.name)
+    client = TcpClient(server_address)
+    upload_file(client,  args.src, args.name)
   elif args.protocol == "udp":
-    upload_file_udp(server_address, args.src, args.name)
+    client = UdpClient(server_address)
+    upload_file(client, args.src, args.name)
   else:
     raise Exception("protocolo invalido")
 
+
 main()
+
+
+

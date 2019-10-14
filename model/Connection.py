@@ -107,4 +107,5 @@ class Connection:
         f.close()
 
     def close(self):
+
         self.socket.stop()

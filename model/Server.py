@@ -9,7 +9,7 @@ class Server(object):
     def __init__(self,  storage_dir):
         self.storage_dir = storage_dir
         self.create_dir()
-        self.principal_thread = threading.Thread(target=self.listen)
+        self.principal_thread = threading.Thread(name="server-listen",target=self.listen)
         self.continue_listening = False
 
     def new_connection(self, connection: Connection):

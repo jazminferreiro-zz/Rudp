@@ -10,7 +10,6 @@ Socket UDP
 envia y recibe bytes
 """
 
-
 class UdpSocket(Socket):
     TIMEOUT = 10  # segundos
     FINISH_TRY = 5 # intentos para enviar el fin
@@ -48,10 +47,11 @@ class UdpSocket(Socket):
 
     def stop(self):
         try:
+            print("shutdown udp socket")
             self.sock.sendto(b'shutdown', self.own_address)
+            self.sock.close()
         except:
             pass
-        self.sock.close()
         self.is_connected = False
 
 
@@ -117,11 +117,9 @@ class UdpSocket(Socket):
     #si no lo recibe pasado el timeout lo tomara como perdido
     def wait_ack(self) -> bool:
         try:
-            ack_data, addr = self.sock.recvfrom(self.MSS)
+            ack_data= self.recv()
         except socket.timeout:
             return False
-        if (self.conn_adress != None and  self.conn_adress != addr):
-            print("No es posible atender mas de una conexion cliente-servidor por vez")
         ack_package = pickle.loads(ack_data)
         ack_num = ack_package.get(self.HEADER).get(self.ACK)
         if(ack_num == None):
@@ -166,7 +164,9 @@ class UdpSocket(Socket):
         return b''.join(chunks)
 
     def recv(self)-> bytes:
+
         data, addr = self.sock.recvfrom(self.MSS)
+
         if (self.conn_adress == None):
             self.conn_adress = addr
         elif (self.conn_adress != addr):
