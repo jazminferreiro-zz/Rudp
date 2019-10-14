@@ -15,20 +15,31 @@ class Server(object):
     def new_connection(self, connection: Connection):
         self.connection = connection
 
-    def stop_runnig(self):
+    def stop_running(self, connection: Connection = None):
         self.continue_listening = False
+        connection.close()
+        if(connection != None):
+            connection.close()
+        self.principal_thread.join(timeout=1)
         self.principal_thread.join()
 
     def start_listenning(self):
         self.continue_listening = True
         self.principal_thread.start()
 
+
     def listen(self):
         while(self.continue_listening):
-            self.execute_command()
-            self.reset()
-            print("listo para aceptar nuevas conexiones")
-            self.connect_with_client()
+            try:
+                self.connect_with_client()
+                self.execute_command()
+                self.reset()
+                print("listo para aceptar nuevas conexiones")
+
+            except(OSError,AttributeError):
+                print(" se cerro el server")
+
+
 
     def connect_with_client(self):
         #para que ejecute methodo diferente dependiendo de si es udp o tpc

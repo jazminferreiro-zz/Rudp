@@ -105,3 +105,6 @@ class Connection:
 
         # Cierro archivo
         f.close()
+
+    def close(self):
+        self.socket.stop()
