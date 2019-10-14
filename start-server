@@ -18,20 +18,21 @@ def parse_arguments():
 
 def start_server_tcp(server_address, storage_dir):
   server = TcpServer(server_address, storage_dir)
-  while True:
-    finish_serv_client = False
-    while not (finish_serv_client):
-      finish_serv_client = server.execute_command()
-    server.connect_with_client()
+  server.start_listenning()
+  c = None
+  while not c:
+    c = input()
+  server.stop_runnig()
 
 
 def start_server_udp(server_address, storage_dir):
   server = UdpServer(server_address, storage_dir)
-  while True:
-    finish_serv_client = False
-    while not (finish_serv_client):
-      finish_serv_client = server.execute_command()
-    server.connect_with_client()
+  server.start_listenning()
+  c = None
+  while not c:
+    c = input()
+  server.stop_runnig()
+
 
 
 def main():

@@ -1,3 +1,5 @@
+import threading
+
 from model.Connection import Connection
 
 import os
@@ -7,13 +9,35 @@ class Server(object):
     def __init__(self,  storage_dir):
         self.storage_dir = storage_dir
         self.create_dir()
+        self.principal_thread = threading.Thread(target=self.listen)
+        self.continue_listening = False
+
+    def new_connection(self, connection: Connection):
+        self.connection = connection
+
+    def stop_runnig(self):
+        self.continue_listening = False
+        self.principal_thread.join()
+
+    def start_listenning(self):
+        self.continue_listening = True
+        self.principal_thread.start()
+
+    def listen(self):
+        while(self.continue_listening):
+            self.execute_command()
+            self.reset()
+            print("listo para aceptar nuevas conexiones")
+            self.connect_with_client()
+
+    def connect_with_client(self):
+        #para que ejecute methodo diferente dependiendo de si es udp o tpc
+        pass
 
     def reset(self):
         #para resetear la conexion UDP
         pass
 
-    def new_connection(self, connection: Connection):
-        self.connection = connection
 
     def create_dir(self):
         """ Validación de directorio, si no existe lo crea. """
@@ -22,8 +46,6 @@ class Server(object):
             print('Dir: {} created!'.format(self.storage_dir))
 
     def execute_command(self):
-        self.reset()
-        print("listo para aceptar nuevas conexiones")
         command = self.connection.recv_code()
         if command == self.connection.DOWNLOAD:
             print("EL cliente solicita descargar archivo")

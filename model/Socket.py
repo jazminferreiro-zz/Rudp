@@ -7,6 +7,7 @@ Solo para definir los metodos que tiene
 class Socket(object):
     MSS = 1024
     NUM_SIZE = 10
+    FIN = "FIN"
     def bind_and_listen(self) :
         pass
     def accept(self):

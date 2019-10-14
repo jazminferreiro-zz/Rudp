@@ -54,15 +54,21 @@ class UdpSocket(Socket):
             raise RuntimeError("socket not connected")
         msg_len = len(msg)
         total_ack = 0
+        forwarded = 0
         while total_ack < msg_len:
             package = self.pack(msg, total_ack)
             sent = self.sock.sendto(pickle.dumps(package), self.conn_adress)
             if sent == 0:
                 print("Error sending msg")
                 raise RuntimeError("socket connection broken")
-            if (self.wait_ack()):
+            elif (self.wait_ack()):
                 total_ack = total_ack + len(package.get('payload'))
                 self.seq_num = self.seq_num + sent #nuevo paquete, sino reenvio el mismo
+            else:
+                forwarded += 1
+                if(forwarded == 3):
+                    self.seq_num = self.seq_num + sent
+                    break #si el paquete ya se reenvio 3 veces debe haberse cerrado la conexion!
         return total_ack
 
 
@@ -70,7 +76,6 @@ class UdpSocket(Socket):
     #para eso necesitan tener un tamaño fino = MSS
     #un paquete con payload vacio ocupa 70
     def pack(self, msg: bytes, total_ack: bytes):
-        print("----------------------> enviando paquete {}".format(self.seq_num))
         package = {
             'header': {'seq_num': self.seq_num},
             'payload': ''
@@ -78,6 +83,7 @@ class UdpSocket(Socket):
         payload_las_byte = total_ack + self.MSS - len(pickle.dumps(package))
         payload = msg[total_ack:min(len(msg), payload_las_byte)]
         package['payload'] = payload
+        print("----------------------> enviando paquete {} = '{}...'".format(self.seq_num, payload.decode()[0:min(10, len(payload))]))
         return package
 
 
@@ -96,6 +102,7 @@ class UdpSocket(Socket):
             print("------------------ paquete {} recibido correctamente".format(self.seq_num))
             return True
         return False
+
 
 
     def receive_bytes(self, size: int) -> bytes:
@@ -127,7 +134,6 @@ class UdpSocket(Socket):
             payload = package.get('payload')
             chunks.append(payload)
             bytes_recd = bytes_recd + len(payload)
-
         return b''.join(chunks)
 
 
