@@ -42,6 +42,7 @@ class Scheduler(Actor):
         worker = Worker(pack, self.sender)
         handler = executor.submit(worker.run)
         self.workers[self.seq_num] = (worker, handler)
+        self.seq_num += 1
 
     def stop_worker(self, pack):
         worker, handler = self.workers.get(pack.get('header').get('ack_num'))

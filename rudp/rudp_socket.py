@@ -58,7 +58,7 @@ class RudpSocket(object):
         return pack.get('payload'), pack.get('header').get('src_recv_addr')
 
     def close(self):
-        self.queue.join()
+        self.queue.join() # wait always for last packages? or close and ignore? 
         self.close_services()
         self.send_sock.close()
         self.recv_sock.close()

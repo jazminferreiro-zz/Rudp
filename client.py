@@ -11,6 +11,13 @@ def main():
 
     rudp = RudpSocket(CLI_SEND_ADDR)
     rudp.sendto(b'start', SV_RECV_ADDR)
+    data, addr = rudp.recvfrom(BUFSIZE)
+
+    for i in range(10):
+        rudp.sendto('msg {}'.format(i), SV_RECV_ADDR)
+
+    rudp.sendto(b'fin', SV_RECV_ADDR)
+    data, addr = rudp.recvfrom(BUFSIZE)
 
     time.sleep(7)
     rudp.close()
