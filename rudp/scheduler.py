@@ -34,7 +34,6 @@ class Scheduler(Actor):
                     print('-- scheduler stopping worker, pack', pack)
                     self.stop_worker(pack)
                     self.task_done()
-                    self.task_done()
 
         print('-- end scheduler')
 
@@ -48,3 +47,4 @@ class Scheduler(Actor):
         worker, handler = self.workers.get(pack.get('header').get('ack_num'))
         worker.stop()
         handler.result()
+        self.task_done()
