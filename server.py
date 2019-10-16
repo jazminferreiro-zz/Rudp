@@ -14,7 +14,7 @@ def main():
     data, addr = rudp.recvfrom(BUFSIZE)
     rudp.sendto(b'ok_start', addr)
 
-    for i in range(10):
+    for i in range(100):
         data, addr = rudp.recvfrom(BUFSIZE)
         print(data)
 

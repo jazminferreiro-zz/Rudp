@@ -2,9 +2,9 @@ from rudp.thread import Thread
 import queue
 
 class Actor(Thread):
-    def __init__(self):
+    def __init__(self, maxsize = 0):
         super().__init__()
-        self.queue = queue.Queue()
+        self.queue = queue.Queue(maxsize)
 
     def put(self, data):
         self.queue.put(data)
