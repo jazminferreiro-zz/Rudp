@@ -9,7 +9,7 @@ class RudpSocket(object):
         self.send_sock = self.create_socket(self.send_addr)
         self.recv_sock = self.create_socket(self.recv_addr)
         self.queue = queue.Queue()
-        self.scheduler = Scheduler()
+        self.scheduler = Scheduler(self.send_sock)
         self.start_services()
 
     def start_services(self):
@@ -26,9 +26,9 @@ class RudpSocket(object):
         return sock
 
     def sendto(self, data, addr):
-        msg = {'header': {'recv_addr': self.recv_addr},
+        pack = {'header': {'recv_addr': self.recv_addr},
                 'payload': data}
-        self.scheduler.put(msg)
+        self.scheduler.put(pack)
 
     def recvfrom(self, bufsize):
         return self.recv_sock.recvfrom(bufsize)
