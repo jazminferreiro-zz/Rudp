@@ -2,6 +2,7 @@ import queue
 import socket
 from rudp.scheduler import Scheduler
 from rudp.sender import Sender
+from rudp.receiver import Receiver
 
 class RudpSocket(object):
     def __init__(self, send_addr):
@@ -12,20 +13,21 @@ class RudpSocket(object):
         self.queue = queue.Queue()
         self.sender = Sender(self.send_sock)
         self.scheduler = Scheduler(self.sender)
+        self.receiver = Receiver(self.recv_sock)
         self.start_services()
 
     def start_services(self):
         self.sender.start()
         self.scheduler.start()
-
+        self.receiver.start()
 
     def close_services(self):
         self.scheduler.stop()
         self.scheduler.join()
         self.sender.stop()
         self.sender.join()
-
-
+        self.receiver.stop()
+        self.receiver.join()
 
     def create_socket(self, addr):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
