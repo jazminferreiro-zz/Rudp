@@ -3,6 +3,7 @@ from rudp.actor import Actor
 class Scheduler(Actor):
     def __init__(self):
         super().__init__()
+        self.seq_num = 0
 
     def run(self):
         print('init scheduler')
