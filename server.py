@@ -4,6 +4,8 @@ import time
 CLI_RECV_ADDR = ('127.0.0.1', 5001)
 SV_SEND_ADDR = ('127.0.0.1', 9000)
 BUFSIZE = 1024
+IS_CLIENT = False
+
 
 def main():
     print('init server')
