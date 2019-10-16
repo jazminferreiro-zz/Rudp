@@ -20,8 +20,15 @@ class Scheduler(Actor):
                 if pack is None:
                     self.task_done()
                     break
-                self.submit_worker(executor, pack)
-                self.task_done()
+
+                if pack.get('payload'):
+                    print('--scheduler submitting worker , pack: ', pack)
+                    self.submit_worker(executor, pack)
+                    self.task_done()
+                elif pack.get('header').get('is_ack'):
+                    print('-- scheduler stopping worker, pack', pack)
+                    self.stop_worker(pack)
+                    self.task_done()
         print('-- end scheduler')
 
     def submit_worker(self, executor, pack):
@@ -30,3 +37,6 @@ class Scheduler(Actor):
         handler = executor.submit(worker.run)
         self.workers[self.seq_num] = (worker, handler)
         handler.result()
+
+    def stop_worker(self, pack):
+        pass
