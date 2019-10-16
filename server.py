@@ -13,7 +13,7 @@ def main():
     rudp = RudpSocket(SV_SEND_ADDR)
     data, addr = rudp.recvfrom(BUFSIZE)
 
-    time.sleep(10)
+    time.sleep(7)
     rudp.close()
 
     print('end server')

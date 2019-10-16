@@ -12,7 +12,7 @@ def main():
     rudp = RudpSocket(CLI_SEND_ADDR)
     rudp.sendto(b'start', SV_RECV_ADDR)
 
-    time.sleep(10)
+    time.sleep(7)
     rudp.close()
 
     print('end client')

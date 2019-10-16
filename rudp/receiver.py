@@ -5,11 +5,12 @@ import pickle
 class Receiver(Thread):
     BUFSIZE = 1024
 
-    def __init__(self, recv_sock, sender, scheduler):
+    def __init__(self, recv_sock, sender, scheduler, arranger):
         super().__init__()
         self.recv_sock = recv_sock
         self.sender = sender
         self.scheduler = scheduler
+        self.arranger = arranger
 
     def run(self):
         print('-- init receiver')

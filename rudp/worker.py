@@ -3,7 +3,7 @@ import threading
 from rudp.sender import Sender
 
 class Worker(object):
-    TIMEOUT = 100
+    TIMEOUT = 10
 
     def __init__(self, pack, sender):
         self.pack = pack
