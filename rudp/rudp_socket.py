@@ -15,7 +15,7 @@ class RudpSocket(object):
         self.queue = queue.Queue()
         self.sender = Sender(self.send_sock)
         self.scheduler = Scheduler(self.sender)
-        self.arranger = Arranger()
+        self.arranger = Arranger(self.queue)
         self.receiver = Receiver(self.recv_sock, self.sender, self.scheduler, self.arranger)
         self.start_services()
 
@@ -53,7 +53,9 @@ class RudpSocket(object):
         self.scheduler.put(pack)
 
     def recvfrom(self, bufsize):
-        return None, None
+        pack = self.queue.get()
+        self.queue.task_done()
+        return pack.get('payload'), pack.get('header').get('src_recv_addr')
 
     def close(self):
         self.queue.join()

@@ -23,6 +23,7 @@ class Receiver(Thread):
             print('-- receiver receiving pack {} from addr {}'.format(pack, addr))
 
             if pack.get('payload'):
+                self.arranger.put(pack)
                 self.send_back_ack(pack)
             elif pack.get('header').get('is_ack'):
                 self.acknowledge_pack(pack)

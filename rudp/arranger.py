@@ -1,8 +1,9 @@
 from rudp.actor import Actor
 
 class Arranger(Actor):
-    def __init__(self):
+    def __init__(self, recv_queue):
         super().__init__()
+        self.recv_queue = recv_queue
 
     def run(self):
         print('-- init arranger')
@@ -12,5 +13,7 @@ class Arranger(Actor):
                 self.task_done()
                 break
             print('-- arrenger got pack: ', pack)
+            print('-- arranger sending --> rudp')
+            self.recv_queue.put(pack)
             self.task_done()
         print('-- end arranger')
