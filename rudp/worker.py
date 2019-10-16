@@ -1,10 +1,14 @@
+import pickle
+from rudp.sender import Sender
+
 class Worker(object):
-    def __init__(self, pack, send_sock):
+    def __init__(self, pack, sender):
         self.pack = pack
-        self.send_sock = send_sock
+        self.sender = sender
 
     def run(self):
-        print('init worker')
-        print('worker: ', self.pack)
-        print('worker sending package')
-        print('end worker')
+        print('-- init worker')
+        print('-- worker: {}'.format(self.pack))
+        print('-- worker sending package')
+        self.sender.put(self.pack)
+        print('-- end worker')
