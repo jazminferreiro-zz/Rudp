@@ -13,8 +13,9 @@ def main():
     rudp.sendto(b'start', SV_RECV_ADDR)
     data, addr = rudp.recvfrom(BUFSIZE)
 
-    for i in range(100):
+    for i in range(10):
         rudp.sendto('msg {}'.format(i), SV_RECV_ADDR)
+        print('arrived: ', rudp.recvfrom(BUFSIZE))
 
     rudp.sendto(b'fin', SV_RECV_ADDR)
     data, addr = rudp.recvfrom(BUFSIZE)
