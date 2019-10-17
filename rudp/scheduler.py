@@ -10,7 +10,7 @@ class Scheduler(Actor):
     MAX_WORKERS = 10
 
     def __init__(self, sender):
-        super().__init__(self.MAX_WORKERS)
+        super().__init__()
         self.seq_num = 0
         self.workers = {}
         self.sender = sender
