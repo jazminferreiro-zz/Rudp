@@ -1,26 +1,55 @@
 from rudp.rudp_socket import RudpSocket
 import time
+import os
 
 CLI_SEND_ADDR = ('127.0.0.1', 5000)
 SV_RECV_ADDR = ('127.0.0.1', 9001)
 BUFSIZE = 1024
-IS_CLIENT = True
+FILEBUFSIZE = int(BUFSIZE / 2)
+
+NAME = 'example.txt'
+SRC = './files/{}'.format(NAME)
+
+
+def file_size(f):
+     f.seek(0, os.SEEK_END)
+     size = f.tell()
+     f.seek(0, os.SEEK_SET)
+     return size
 
 def main():
     print('init client')
-
     rudp = RudpSocket(CLI_SEND_ADDR)
-    rudp.sendto(b'start', SV_RECV_ADDR)
+
+    # init connection
+    rudp.sendto('start', SV_RECV_ADDR)
     data, addr = rudp.recvfrom(BUFSIZE)
+    if data != 'start_ok':
+        print('start error')
+        rudp.close()
+        return
 
-    for i in range(10):
-        rudp.sendto('msg {}'.format(i), SV_RECV_ADDR)
-        print('arrived: ', rudp.recvfrom(BUFSIZE))
+    rudp.sendto(NAME, SV_RECV_ADDR)
+    rudp.recvfrom(BUFSIZE)
 
-    rudp.sendto(b'fin', SV_RECV_ADDR)
+    with open(SRC, 'rb') as file:
+        rudp.sendto(file_size(file), SV_RECV_ADDR)
+        rudp.recvfrom(BUFSIZE)
+
+        while True:
+            chunk = file.read(FILEBUFSIZE)
+            if not chunk:
+                break
+            rudp.sendto(chunk, SV_RECV_ADDR)
+
+    # end connecetion
+    rudp.sendto('fin', SV_RECV_ADDR)
     data, addr = rudp.recvfrom(BUFSIZE)
+    if data != 'fin_ok':
+        print('fin error')
+        rudp.close()
+        return
 
-    time.sleep(7)
     rudp.close()
 
     print('end client')
