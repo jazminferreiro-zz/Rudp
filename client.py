@@ -7,7 +7,7 @@ SV_RECV_ADDR = ('127.0.0.1', 9001)
 BUFSIZE = 1024
 FILEBUFSIZE = int(BUFSIZE / 2)
 
-NAME = 'one_string.txt'
+NAME = 'example.txt'
 SRC = './files/{}'.format(NAME)
 
 
@@ -51,7 +51,7 @@ def main():
         return
 
     print('zzzzzzzzzzzzzzzzzz client enters sleep')
-    time.sleep(15)
+    time.sleep(6)
     rudp.close()
 
     print('end client')
