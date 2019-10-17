@@ -26,12 +26,8 @@ def start_server_tcp(server_address, storage_dir):
 
 
 def start_server_udp(server_address, storage_dir):
-  server = UdpServer().run(server_address, storage_dir)
-  while True:
-    finish_serv_client = False
-    while not (finish_serv_client):
-      finish_serv_client = server.execute_command()
-    server.connect_with_client()
+  UdpServer().run(server_address, storage_dir)
+
 
 
 def main():

@@ -21,9 +21,7 @@ def upload_file_tcp(server_address, src, name):
   client.upload(name,src)
 
 def upload_file_udp(server_address, src, name):
-  client = UdpClient()
-  client.upload(server_address,src, name)
-
+  UdpClient().upload(server_address, src, name)
 
 def main():
   args = parse_arguments()
