@@ -13,14 +13,11 @@ class Receiver(Thread):
         self.arranger = arranger
 
     def run(self):
-        print('-- init receiver')
         while True:
             data, addr = self.recv_sock.recvfrom(self.BUFSIZE)
             if addr is None:
-                print('-- receiver breaking while')
                 break
             pack = pickle.loads(data)
-            print('-- receiver receiving pack {} from addr {}'.format(pack, addr))
 
             if pack.get('payload'):
                 self.arranger.put(pack)
@@ -28,14 +25,11 @@ class Receiver(Thread):
             elif pack.get('header').get('is_ack'):
                 self.acknowledge_pack(pack)
 
-        print('-- end receiver')
-
     def stop(self):
         try:
-            pass
             self.recv_sock.shutdown(socket.SHUT_RD)
         except:
-            print('-- receiver recv_sock.shutdown()')
+            pass
 
     def send_back_ack(self, pack):
         ack_pack = {
@@ -45,9 +39,7 @@ class Receiver(Thread):
                 'dst_recv_addr': pack.get('header').get('src_recv_addr')
             }
         }
-        print('-- receiver -- ack_pack --> sender,  ', ack_pack)
         self.sender.put(ack_pack)
 
     def acknowledge_pack(self, pack):
-        print('-- receiver -- ack --> scheduler,  ', pack)
         self.scheduler.put(pack)
