@@ -35,7 +35,7 @@ def main():
     data, addr = rudp.recvfrom(BUFSIZE)
     rudp.sendto('fin_ok', addr)
 
-    time.sleep(5)
+    time.sleep(3600)
     rudp.close()
 
     print('end server')
