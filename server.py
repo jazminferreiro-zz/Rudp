@@ -1,8 +1,9 @@
 from rudp.rudp_socket import RudpSocket
 import time
 
-CLI_RECV_ADDR = ('127.0.0.1', 5001)
-SV_SEND_ADDR = ('127.0.0.1', 9000)
+CLI_ADDR = ('127.0.0.1', 5000)
+SV_ADDR = ('127.0.0.1', 9000)
+
 BUFSIZE = 1024
 IS_CLIENT = False
 OUTPUT_DIR = './output'
@@ -10,7 +11,7 @@ FILEBUFSIZE = int(BUFSIZE / 2)
 
 def main():
     print('init server')
-    rudp = RudpSocket(SV_SEND_ADDR)
+    rudp = RudpSocket(SV_ADDR)
 
     data, addr = rudp.recvfrom(BUFSIZE)
     rudp.sendto('start_ok', addr)

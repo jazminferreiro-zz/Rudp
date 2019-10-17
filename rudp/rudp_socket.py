@@ -41,12 +41,13 @@ class RudpSocket(object):
         sock.bind(addr)
         return sock
 
-    def sendto(self, data, dst_recv_addr):
+    def sendto(self, data, dst_send_addr):
         pack = {
             'header': {
                     'src_send_addr': self.send_addr,
                     'src_recv_addr': self.recv_addr,
-                    'dst_recv_addr': dst_recv_addr
+                    'dst_recv_addr': (dst_send_addr[0], dst_send_addr[1] + 1),
+                    'dst_send_addr': dst_send_addr
             },
             'payload': data
         }
@@ -55,10 +56,10 @@ class RudpSocket(object):
     def recvfrom(self, bufsize):
         pack = self.queue.get()
         self.queue.task_done()
-        return pack.get('payload'), pack.get('header').get('src_recv_addr')
+        return pack.get('payload'), pack.get('header').get('src_send_addr')
 
     def close(self):
-        self.queue.join() # wait always for last packages? or close and ignore? 
+        self.queue.join() # wait always for last packages? or close and ignore?
         self.close_services()
         self.send_sock.close()
         self.recv_sock.close()

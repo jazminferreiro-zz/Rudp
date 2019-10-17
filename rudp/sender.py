@@ -12,7 +12,6 @@ class Sender(Actor):
             if data is None:
                 self.task_done()
                 break
-
             self.send_sock.sendto(
                 pickle.dumps(data),
                 data.get('header').get('dst_recv_addr')
