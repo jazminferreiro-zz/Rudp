@@ -32,9 +32,10 @@ class Scheduler(Actor):
                     self.submit_worker(executor, pack)
                 elif pack.get('header').get('is_ack'):
                     print('-- scheduler stopping worker, pack', pack)
-                    self.stop_worker(pack)
+                    self.stop_worker_if_exists(pack)
                     self.task_done()
 
+        print('-- scheduler qsize() = ', self.queue.qsize())
         print('-- end scheduler')
 
     def submit_worker(self, executor, pack):
@@ -44,8 +45,20 @@ class Scheduler(Actor):
         self.workers[self.seq_num] = (worker, handler)
         self.seq_num += 1
 
-    def stop_worker(self, pack):
-        worker, handler = self.workers.get(pack.get('header').get('ack_num'))
-        worker.stop()
-        handler.result()
-        self.task_done()
+    def stop_worker_if_exists(self, pack):
+        ack_num = pack.get('header').get('ack_num')
+        if self.workers.get(ack_num):
+            worker, handler = self.workers.get(ack_num)
+            worker.stop()
+            handler.result()
+            self.workers.pop(ack_num)
+            self.task_done()
+
+    # TODO: delete
+    def stop(self):
+        self.queue.put(None)
+        print('-- scheduler put None')
+        self.queue.join()
+        print('-- scheduler queue joined')
+        self.thread.join()
+        print('-- scheduler thread joined')

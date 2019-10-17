@@ -19,4 +19,14 @@ class Sender(Actor):
                 data.get('header').get('dst_recv_addr')
             )
             self.task_done()
+        print('-- sender qsize() = ', self.queue.qsize())
         print('-- end sender')
+
+    # TODO: delete
+    def stop(self):
+        self.queue.put(None)
+        print('-- sender put None')
+        self.queue.join()
+        print('-- sender queue joined')
+        self.thread.join()
+        print('-- sender thread joined')

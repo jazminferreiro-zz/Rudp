@@ -18,13 +18,16 @@ class Arranger(Actor):
             print('-- arrenger got pack: ', pack)
             self.arrange(pack)
 
+        print('-- arrenger qsize() = ', self.queue.qsize())
         print('-- end arranger')
 
     def arrange(self, pack):
         print('-- arrenge arranging')
         seq_num = pack.get('header').get('seq_num')
 
-        if  seq_num in self.seq_num_received:
+        if seq_num in self.seq_num_received:
+            print('-- *****!!! arrenger dropping seq_num: ', seq_num)
+            self.task_done()
             return # drop duplicated packs with payload
 
         self.seq_num_received.add(seq_num)
@@ -43,3 +46,12 @@ class Arranger(Actor):
                 self.task_done()
             else:
                 return
+
+    # TODO: delete
+    def stop(self):
+        self.queue.put(None)
+        print('-- arranger put None')
+        self.queue.join()
+        print('-- arranger queue joined')
+        self.thread.join()
+        print('-- arranger thread joined')

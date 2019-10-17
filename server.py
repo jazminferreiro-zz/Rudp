@@ -16,12 +16,12 @@ def main():
     rudp.sendto('start_ok', addr)
 
     name, addr = rudp.recvfrom(BUFSIZE)
-    rudp.sendto('ok', addr)
+    rudp.sendto('name_ok', addr)
 
     print('-!!!!!!!!! NAME: {}!!!!!!!'.format(name))
 
     size, addr = rudp.recvfrom(BUFSIZE)
-    rudp.sendto('ok', addr)
+    rudp.sendto('size_ok', addr)
 
     print('-!!!!!!!!! SIZE: {}!!!!!!!'.format(size))
 
@@ -35,7 +35,8 @@ def main():
     data, addr = rudp.recvfrom(BUFSIZE)
     rudp.sendto('fin_ok', addr)
 
-    time.sleep(3600)
+    print('zzzzzzzzzzzzzzzzz  server enters sleep')
+    time.sleep(10)
     rudp.close()
 
     print('end server')
