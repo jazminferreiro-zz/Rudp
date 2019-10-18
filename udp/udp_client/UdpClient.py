@@ -9,6 +9,7 @@ class UdpClient(object):
         connection.sendto(name, server_address)
         connection.send_file(src, server_address)
         connection.close()
+        print('uploaded!')
 
 
     def download(self, server_address, name, dest):
@@ -17,3 +18,4 @@ class UdpClient(object):
         connection.sendto(name, server_address)
         connection.recv_file(dest)
         connection.close()
+        print('downloaded!')

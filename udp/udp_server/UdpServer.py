@@ -1,5 +1,6 @@
 from udp.connection import Connection
 import time
+import os
 
 class UdpServer(object):
     BUFSIZE = 1024
@@ -22,6 +23,7 @@ class UdpServer(object):
             print('-- end')
 
     def upload_file(self, storage_dir, connection):
+        self.create_dir(storage_dir)
         name, addr = connection.recvfrom()
         pathname = '{}/{}'.format(storage_dir, name)
         connection.recv_file(pathname)
@@ -30,3 +32,9 @@ class UdpServer(object):
         name, addr = connection.recvfrom()
         pathname = '{}/{}'.format(storage_dir, name)
         connection.send_file(pathname, addr)
+
+    def create_dir(self, dir):
+        """ Validación de directorio, si no existe lo crea. """
+        if not os.path.exists(dir):
+            os.mkdir(dir)
+            print('Dir: {} created!'.format(dir))
