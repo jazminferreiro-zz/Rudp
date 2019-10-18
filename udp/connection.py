@@ -1,5 +1,6 @@
 from rudp.rudp_socket import RudpSocket
 import os
+import time
 
 class Connection(object):
     # otherwise is too much for pickle (max dumped package: 4kB)
@@ -7,6 +8,7 @@ class Connection(object):
     CHUNK_SIZE = int(BUFSIZE / 2)
     SUCESS = 0
     ERROR = -1
+    WAIT_LAST_ACK_SECONDS = 1
 
     def __init__(self, addr):
         self.sock = RudpSocket(addr)
@@ -50,6 +52,9 @@ class Connection(object):
 
     def recvfrom(self):
         return self.sock.recvfrom(self.BUFSIZE)
+
+    def wait_last_ack(self):
+        time.sleep(self.WAIT_LAST_ACK_SECONDS)
 
     def file_size(self, file):
         file.seek(0, os.SEEK_END)
