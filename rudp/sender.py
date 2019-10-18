@@ -9,6 +9,7 @@ class Sender(Actor):
     def run(self):
         while True:
             pack = self.get()
+            print('-- sender pack: ', pack)
             if pack is None:
                 self.task_done()
                 break
