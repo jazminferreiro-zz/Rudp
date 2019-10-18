@@ -7,7 +7,7 @@ SV_ADDR = ('127.0.0.1', 9000)
 BUFSIZE = 1024
 FILEBUFSIZE = int(BUFSIZE/2)
 
-NAME = 'one_string.txt'
+NAME = 'example2.txt'
 SRC = './files/{}'.format(NAME)
 
 
