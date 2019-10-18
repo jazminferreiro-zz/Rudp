@@ -30,13 +30,11 @@ class Connection(object):
 
     def recv_file(self, dest):
         size, addr = self.sock.recvfrom(self.BUFSIZE)
-        print(dest)
 
         with open(dest, 'wb') as file:
             bytes_recv = 0
             while bytes_recv < size:
                 chunk, addr = self.sock.recvfrom(self.BUFSIZE)
-                print(chunk)
                 bytes_recv += len(chunk)
                 file.write(chunk)
 

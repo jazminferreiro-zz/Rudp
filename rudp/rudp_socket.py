@@ -60,7 +60,6 @@ class RudpSocket(object):
         time.sleep(self.WAIT_LAST_ACK_SECONDS)
 
     def close(self):
-        print('-- rudp close')
         self.wait_last_ack()
         self.queue.join()
         self.close_services()

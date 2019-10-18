@@ -13,7 +13,6 @@ class Worker(object):
 
     def run(self):
         while not self.arrived_ack:
-            print('-- worker pack: ', self.pack)
             self.sender.put(self.pack)
             self.arrived_ack_event.wait(self.TIMEOUT)
 

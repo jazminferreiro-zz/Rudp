@@ -18,7 +18,6 @@ class Receiver(Thread):
             if addr is None:
                 break
             pack = pickle.loads(data)
-            print('--receiver data: ', pack)
 
             if pack.get('payload'):
                 self.arranger.put(pack)
