@@ -6,7 +6,8 @@ class UdpClient(object):
     def upload(self, server_address, src, name):
         connection = Connection(self.OWN_ADDR)
         connection.sendto('upload', server_address)
-        connection.send_file(src, name, server_address)
+        connection.sendto(name, server_address)
+        connection.send_file(src, server_address)
         connection.close()
 
 

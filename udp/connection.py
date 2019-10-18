@@ -16,11 +16,9 @@ class Connection(object):
     def close(self):
         self.sock.close()
 
-    def send_file(self, src, name, server_address):
+    def send_file(self, src, server_address):
         with open(src, 'rb') as file:
-            self.sock.sendto(name, server_address)
             self.sock.sendto(self.file_size(file), server_address)
-
             while True:
                 chunk = file.read(self.CHUNK_SIZE)
                 if not chunk:
@@ -30,14 +28,11 @@ class Connection(object):
         bytes, addr = self.sock.recvfrom(self.BUFSIZE)
         return bytes
 
-
-    def recv_file(self, storage_dir):
-        name, addr = self.sock.recvfrom(self.BUFSIZE)
+    def recv_file(self, dest):
         size, addr = self.sock.recvfrom(self.BUFSIZE)
-        pathfile = '{}/{}'.format(storage_dir, name)
-        print(pathfile)
+        print(dest)
 
-        with open(pathfile, 'wb') as file:
+        with open(dest, 'wb') as file:
             bytes_recv = 0
             while bytes_recv < size:
                 chunk, addr = self.sock.recvfrom(self.BUFSIZE)

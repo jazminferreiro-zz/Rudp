@@ -7,7 +7,7 @@ class UdpServer(object):
     def run(self, server_address, storage_dir):
         while True:
             connection = Connection(server_address)
-            
+
             print('-- waiting mode')
             mode, addr = connection.recvfrom()
             if mode == 'upload':
@@ -21,7 +21,9 @@ class UdpServer(object):
             connection.close()
 
     def upload_file(self, storage_dir, connection):
-        connection.recv_file(storage_dir)
+        name, addr = connection.recvfrom()
+        pathname = '{}/{}'.format(storage_dir, name)
+        connection.recv_file(pathname)
 
     def download_file(self, addr, storage_dir, connection):
         name, addr = connection.recvfrom()
