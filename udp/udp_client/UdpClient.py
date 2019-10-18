@@ -11,4 +11,8 @@ class UdpClient(object):
 
 
     def download(self, server_address, name, dest):
-        pass
+        connection = Connection(self.OWN_ADDR)
+        connection.sendto('download', server_address)
+        connection.sendto(name, server_address)
+        connection.recv_file(dest)
+        connection.close()

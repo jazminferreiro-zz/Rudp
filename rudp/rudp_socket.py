@@ -7,7 +7,7 @@ from rudp.receiver import Receiver
 from rudp.arranger import Arranger
 
 class RudpSocket(object):
-    WAIT_LAST_ACK_SECONDS = 2
+    WAIT_LAST_ACK_SECONDS = 1
 
     def __init__(self, addr):
         self.addr = addr

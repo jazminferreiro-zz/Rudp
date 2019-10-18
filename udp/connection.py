@@ -29,7 +29,7 @@ class Connection(object):
         return bytes
 
 
-    def recv_file(self, addr, storage_dir):
+    def recv_file(self, storage_dir):
         name, addr = self.sock.recvfrom(self.BUFSIZE)
         size, addr = self.sock.recvfrom(self.BUFSIZE)
         pathfile = '{}/{}'.format(storage_dir, name)
