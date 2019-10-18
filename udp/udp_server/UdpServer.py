@@ -28,4 +28,4 @@ class UdpServer(object):
     def download_file(self, addr, storage_dir, connection):
         name, addr = connection.recvfrom()
         pathname = '{}/{}'.format(storage_dir, name)
-        connection.send_file(pathname, name, addr)
+        connection.send_file(pathname, addr)
