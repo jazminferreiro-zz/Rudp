@@ -9,16 +9,14 @@ from rudp.arranger import Arranger
 class RudpSocket(object):
     WAIT_LAST_ACK_SECONDS = 0.5
 
-    def __init__(self, send_addr):
-        self.send_addr = send_addr
-        self.recv_addr = (send_addr[0], send_addr[1] + 1) # send_port + 1
-        self.send_sock = self.create_socket(self.send_addr)
-        self.recv_sock = self.create_socket(self.recv_addr)
+    def __init__(self, addr):
+        self.addr = addr
+        self.sock = self.create_socket(self.addr)
         self.queue = queue.Queue()
-        self.sender = Sender(self.send_sock)
+        self.sender = Sender(self.sock)
         self.scheduler = Scheduler(self.sender)
         self.arranger = Arranger(self.queue)
-        self.receiver = Receiver(self.recv_sock, self.sender, self.scheduler, self.arranger)
+        self.receiver = Receiver(self.sock, self.sender, self.scheduler, self.arranger)
         self.start_services()
 
     def start_services(self):
@@ -43,13 +41,11 @@ class RudpSocket(object):
         sock.bind(addr)
         return sock
 
-    def sendto(self, data, dst_send_addr):
+    def sendto(self, data, dst_addr):
         pack = {
             'header': {
-                    'src_send_addr': self.send_addr,
-                    'src_recv_addr': self.recv_addr,
-                    'dst_recv_addr': (dst_send_addr[0], dst_send_addr[1] + 1),
-                    'dst_send_addr': dst_send_addr
+                    'src_addr': self.addr,
+                    'dst_addr': dst_addr
             },
             'payload': data
         }
@@ -58,7 +54,7 @@ class RudpSocket(object):
     def recvfrom(self, bufsize):
         pack = self.queue.get()
         self.queue.task_done()
-        return pack.get('payload'), pack.get('header').get('src_send_addr')
+        return pack.get('payload'), pack.get('header').get('src_addr')
 
     def wait_last_ack(self):
         time.sleep(self.WAIT_LAST_ACK_SECONDS)
@@ -67,5 +63,4 @@ class RudpSocket(object):
         self.wait_last_ack()
         self.queue.join()
         self.close_services()
-        self.send_sock.close()
-        self.recv_sock.close()
+        self.sock.close()

@@ -5,9 +5,9 @@ import os
 CLI_ADDR = ('127.0.0.1', 5000)
 SV_ADDR = ('127.0.0.1', 9000)
 BUFSIZE = 1024
-FILEBUFSIZE = int(BUFSIZE)
+FILEBUFSIZE = int(BUFSIZE/2)
 
-NAME = 'example2.txt'
+NAME = 'one_string.txt'
 SRC = './files/{}'.format(NAME)
 
 

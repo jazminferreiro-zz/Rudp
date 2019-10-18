@@ -36,7 +36,7 @@ class Receiver(Thread):
             'header': {
                 'is_ack': True,
                 'ack_num': pack.get('header').get('seq_num'),
-                'dst_recv_addr': pack.get('header').get('src_recv_addr')
+                'dst_addr': pack.get('header').get('src_addr')
             }
         }
         self.sender.put(ack_pack)
