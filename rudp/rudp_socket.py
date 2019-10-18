@@ -1,12 +1,14 @@
 import queue
 import socket
+import time
 from rudp.scheduler import Scheduler
 from rudp.sender import Sender
 from rudp.receiver import Receiver
 from rudp.arranger import Arranger
 
-
 class RudpSocket(object):
+    WAIT_LAST_ACK_SECONDS = 0.5
+
     def __init__(self, send_addr):
         self.send_addr = send_addr
         self.recv_addr = (send_addr[0], send_addr[1] + 1) # send_port + 1
@@ -58,8 +60,12 @@ class RudpSocket(object):
         self.queue.task_done()
         return pack.get('payload'), pack.get('header').get('src_send_addr')
 
+    def wait_last_ack(self):
+        time.sleep(self.WAIT_LAST_ACK_SECONDS)
+
     def close(self):
-        self.queue.join() # wait always for last packages? or close and ignore?
+        self.wait_last_ack()
+        self.queue.join()
         self.close_services()
         self.send_sock.close()
         self.recv_sock.close()

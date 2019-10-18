@@ -37,7 +37,7 @@ def main():
     rudp.sendto('fin_ok', addr)
 
     print('zzzzzzzzzzzzzzzzz  server enters sleep')
-    time.sleep(10)
+    rudp.wait_last_ack()
     rudp.close()
 
     print('end server')

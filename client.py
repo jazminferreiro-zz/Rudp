@@ -5,9 +5,9 @@ import os
 CLI_ADDR = ('127.0.0.1', 5000)
 SV_ADDR = ('127.0.0.1', 9000)
 BUFSIZE = 1024
-FILEBUFSIZE = int(BUFSIZE / 2)
+FILEBUFSIZE = int(BUFSIZE)
 
-NAME = 'example.txt'
+NAME = 'example2.txt'
 SRC = './files/{}'.format(NAME)
 
 
@@ -51,7 +51,6 @@ def main():
         return
 
     print('zzzzzzzzzzzzzzzzzz client enters sleep')
-    time.sleep(6)
     rudp.close()
 
     print('end client')
